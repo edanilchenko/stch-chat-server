@@ -12,8 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->redirectGuestsTo(fn () => null); // prevent route('login') lookup
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $_e, \Illuminate\Http\Request $_request) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        });
     })->create();
