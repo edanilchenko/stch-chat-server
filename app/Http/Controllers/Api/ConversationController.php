@@ -10,6 +10,22 @@ use Illuminate\Http\JsonResponse;
 
 class ConversationController extends Controller
 {
+    // GET /users/search?q=name — search users by name (excludes self)
+    public function searchUsers(Request $request): JsonResponse
+    {
+        $request->validate([
+            'q' => 'required|string|min:1',
+        ]);
+
+        $users = User::where('id', '!=', $request->user()->id)
+            ->where('name', 'like', '%' . $request->q . '%')
+            ->select('id', 'name', 'email')
+            ->limit(20)
+            ->get();
+
+        return response()->json($users);
+    }
+
     // GET /conversations — list all conversations for the authenticated user
     public function index(Request $request): JsonResponse
     {
