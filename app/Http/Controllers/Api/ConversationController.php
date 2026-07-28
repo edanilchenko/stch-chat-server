@@ -19,7 +19,7 @@ class ConversationController extends Controller
 
         $users = User::where('id', '!=', $request->user()->id)
             ->where('name', 'like', '%' . $request->q . '%')
-            ->select('id', 'name', 'email')
+            ->select('id', 'name')
             ->limit(20)
             ->get();
 
@@ -84,7 +84,7 @@ class ConversationController extends Controller
         $this->authorizeConversation($request, $conversation);
 
         $messages = $conversation->messages()
-            ->with('sender:id,name,email')
+            ->with('sender:id,name')
             ->oldest()
             ->get();
 
@@ -105,7 +105,7 @@ class ConversationController extends Controller
             'text' => $request->text,
         ]);
 
-        $message->load('sender:id,name,email');
+        $message->load('sender:id,name');
 
         return response()->json($message, 201);
     }
